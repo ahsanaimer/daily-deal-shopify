@@ -2,7 +2,7 @@
 
 client_id = "0ec08edd993540a1db376d698369c728"
 name = "Daily Deal"
-application_url = "https://example.com"
+application_url = "https://daily-deal-shopify-production.up.railway.app"
 embedded = true
 
 [access_scopes]
@@ -10,7 +10,11 @@ embedded = true
 scopes = "write_discounts,write_metaobject_definitions,write_metaobjects,write_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://daily-deal-shopify-production.up.railway.app/auth/callback",
+  "https://daily-deal-shopify-production.up.railway.app/auth/shopify/callback",
+  "https://daily-deal-shopify-production.up.railway.app/api/auth/callback"
+]
 
 [webhooks]
 api_version = "2027-01"
