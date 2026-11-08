@@ -1,0 +1,115 @@
+{% assign deal_data = shop.metafields.deal_of_day.config.value %}
+{% assign deal_product = all_products[deal_data.product_handle] | default: block.settings.fallback_product %}
+{% assign end_time = deal_data.end_time | default: block.settings.fallback_end_time %}
+{% assign badge_text = deal_data.badge_text | default: block.settings.badge_text %}
+
+{% if deal_product != blank and deal_product.available %}
+  {{ 'deal-bar.css' | asset_url | stylesheet_tag }}
+
+  <div
+    id="dotd-header-bar"
+    class="dotd-bar"
+    style="--dotd-bg: {{ block.settings.bg_color }}; --dotd-text: {{ block.settings.text_color }}; --dotd-accent: {{ block.settings.accent_color }};"
+    data-end-time="{{ end_time }}"
+  >
+    <div class="dotd-container">
+      <!-- Badge & Product Info -->
+      <div class="dotd-product-info">
+        <span class="dotd-badge">{{ badge_text }}</span>
+        {% if deal_product.featured_image %}
+          <img
+            src="{{ deal_product.featured_image | image_url: width: 80 }}"
+            alt="{{ deal_product.title | escape }}"
+            width="36"
+            height="36"
+            class="dotd-thumb"
+            loading="eager"
+          >
+        {% endif %}
+        <a href="{{ deal_product.url }}" class="dotd-title">{{ deal_product.title }}</a>
+        
+      </div>
+
+<!-- Price -->
+<div class="dotd-price-wrap">
+  {% if deal_data.custom_price != blank %}
+    {% assign custom_cents = deal_data.custom_price | times: 100 %}
+    <span class="dotd-price">{{ custom_cents | money }}</span>
+    <span class="dotd-compare-price">{{ deal_product.price | money }}</span>
+  {% else %}
+    <span class="dotd-price">{{ deal_product.price | money }}</span>
+    {% if deal_product.compare_at_price > deal_product.price %}
+      <span class="dotd-compare-price">{{ deal_product.compare_at_price | money }}</span>
+    {% endif %}
+  {% endif %}
+</div>
+
+
+      <!-- Countdown Timer -->
+      <div class="dotd-timer" aria-live="polite">
+        <span class="dotd-timer-label">Ends in:</span>
+        <span class="dotd-time-box" data-hours>00</span>:
+        <span class="dotd-time-box" data-minutes>00</span>:
+        <span class="dotd-time-box" data-seconds>00</span>
+      </div>
+
+      <!-- Quick Add CTA -->
+      <button
+        type="button"
+        class="dotd-cta-btn"
+        data-variant-id="{{ deal_product.selected_or_first_available_variant.id }}"
+      >
+        Claim Deal
+      </button>
+    </div>
+  </div>
+
+{% # theme-check-disable MissingAsset %}
+<script src="{{ 'deal-bar.js' | asset_url }}" defer></script>
+{% # theme-check-enable MissingAsset %}
+
+{% endif %}
+
+{% schema %}
+{
+  "name": "Deal of the Day Bar",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Label",
+      "default": "DEAL OF THE DAY"
+    },
+    {
+      "type": "product",
+      "id": "fallback_product",
+      "label": "Test Product (Used if Admin App not configured)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_end_time",
+      "label": "End Time (ISO Format)",
+      "default": "2026-12-31T23:59:59Z"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Button & Badge Color",
+      "default": "#EF4444"
+    }
+  ]
+}
+{% endschema %}

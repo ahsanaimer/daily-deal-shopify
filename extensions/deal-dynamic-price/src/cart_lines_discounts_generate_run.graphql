@@ -1,0 +1,26 @@
+query CartInput {
+  cart {
+    lines {
+      id
+      quantity
+      cost {
+        amountPerQuantity {
+          amount
+        }
+      }
+      merchandise {
+        ... on ProductVariant {
+          id
+          product {
+            handle
+          }
+        }
+      }
+    }
+  }
+  shop {
+    metafield(namespace: "deal_of_day", key: "config") {
+      value
+    }
+  }
+}
